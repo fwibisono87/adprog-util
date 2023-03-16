@@ -8,4 +8,4 @@ You need to be in a UNIX-like environment to use this tool (LINUX, MACOS, WSL, o
 * You also need git installed (duh)
 * Modify the config file to your needs
 
-MIT license, i do not take responsibility if this bricks your machine.
+MIT license, i do not take responsibility if this bricks your machine.~or if you get a c in adprog lol~
