@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Check if Spring Boot CLI is installed
+if ! command -v spring &> /dev/null
+then
+    echo "This script requires Spring Boot CLI. Please install it and try again."
+    exit 1
+fi
+
+# Read groupId and services from the config file
+config_file="config"
+group_id=$(grep "^groupId=" "$config_file" | cut -d "=" -f 2)
+services_string=$(grep "^services=" "$config_file" | cut -d "=" -f 2)
+IFS=',' read -ra services <<< "$services_string"
+
+# Set options for the Spring Boot project
+build_system="gradle"
+java_version="17"
+dependencies="thymeleaf,lombok,configuration-processor,devtools,web"
+type="gradle-project-kotlin"
+
+# Generate Spring Boot projects for each service
+for service in "${services[@]}"; do
+    echo "Generating Spring Boot project for service: $service"
+    spring init --build="$build_system" --java-version="$java_version" --dependencies="$dependencies" --type="$type" --groupId="$group_id" "$service"
+done
+
+echo "All services have been generated."

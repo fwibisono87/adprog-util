@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Check if Git is installed
+if ! command -v git &> /dev/null
+then
+    echo "This script requires Git. Please install it and try again."
+    exit 1
+fi
+
+# Read groupId and services from the config file
+config_file="config"
+group_id=$(grep "^groupId=" "$config_file" | cut -d "=" -f 2)
+services_string=$(grep "^services=" "$config_file" | cut -d "=" -f 2)
+IFS=',' read -ra services <<< "$services_string"
+
+# .gitignore content
+gitignore_content="### Gradle ###
+.gradle/
+build/
+!gradle-wrapper.jar
+
+### Java ###
+*.class
+*.log
+
+### IntelliJ ###
+.idea/
+*.iml
+*.iws
+*.ipr
+
+### Visual Studio Code ###
+.vscode/
+
+### macOS ###
+.DS_Store
+
+### Spring Boot ###
+HELP.md
+target/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.gz
+*.bz2
+*.7z
+*.rar"
+
+# Initialize Git repo and create .gitignore for each service
+for service in "${services[@]}"; do
+    if [ -d "$service" ]; then
+        echo "Initializing Git repo for service: $service"
+        cd "$service"
+        git init
+        echo "$gitignore_content" > .gitignore
+        git add .
+        git commit -m "Initial commit"
+        cd ..
+    else
+        echo "Directory for service '$service' not found. Skipping."
+    fi
+done
+
+echo "Git repositories have been initialized for all services."
